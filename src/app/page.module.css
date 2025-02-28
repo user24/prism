@@ -16,6 +16,10 @@
   font-family: var(--font-geist-sans);
 }
 
+.imagePreview {
+  border: 1px solid red;
+}
+
 @media (prefers-color-scheme: dark) {
   .page {
     --gray-rgb: 255, 255, 255;
