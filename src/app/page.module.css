@@ -17,7 +17,7 @@
 }
 
 .imagePreview {
-  border: 1px solid red;
+  border: 1px solid var(--gray-alpha-200);
 }
 
 @media (prefers-color-scheme: dark) {
