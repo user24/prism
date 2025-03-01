@@ -19,7 +19,10 @@
 .imagePreview {
   border: 1px solid var(--gray-alpha-200);
 }
-
+.results {
+  display: block;
+  text-align: center;
+}
 @media (prefers-color-scheme: dark) {
   .page {
     --gray-rgb: 255, 255, 255;
