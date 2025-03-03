@@ -9,7 +9,6 @@ import colours from "@/data/xkcdColours";
 import sentenceCase from "@/helpers/sentenceCase";
 import kmeans from "@/helpers/kmeans";
 
-console.log(colours);
 // When we get to clustering, consider using a weighted euclidean distance calculation
 // as detailed here: https://www.compuphase.com/cmetric.htm
 
