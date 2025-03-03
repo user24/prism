@@ -9,6 +9,7 @@ import colours from "@/data/xkcdColours";
 import sentenceCase from "@/helpers/sentenceCase";
 import kmeans from "@/helpers/kmeans";
 
+console.log(colours);
 // When we get to clustering, consider using a weighted euclidean distance calculation
 // as detailed here: https://www.compuphase.com/cmetric.htm
 
@@ -73,7 +74,7 @@ export default function Home() {
             image.onload = () => {
                 setCanvas(imageToCanvas(image));
             };
-            image.src = e.target.result as string;
+            image.src = e.target.result;
         }
         reader.readAsDataURL(file);
     }
@@ -112,6 +113,7 @@ export default function Home() {
               points={colours.map(col => {
                     return {
                         ...col,
+                        label: sentenceCase(col.name),
                         x: col.r,
                         y: col.g,
                         z: col.b
@@ -120,7 +122,7 @@ export default function Home() {
               hovertemplate="%{customdata}<br />rgb(%{x}, %{y}, %{z})"
           />
           <p className={styles.text}>
-              Named colours sourced from the <a href='https://blog.xkcd.com/2010/05/03/color-survey-results/'>XKCD colour survey</a>. Small brag: I got a shoutout in <a href='https://blog.xkcd.com/2010/05/15/miscellaneous/comment-page-1/'>an earlier blog post</a> for a similar visualisation of these results.<br />
+              Named colours sourced from the <a href='https://blog.xkcd.com/2010/05/03/color-survey-results/'>XKCD colour survey</a>. Small brag: I got a shoutout <a href='https://blog.xkcd.com/2010/05/15/miscellaneous/comment-page-1/'>from XKCD</a> for a similar visualisation of these results :)<br /><br />
               I have removed colours with undesirable names such as 'puke green', and judgemental names like 'ugly purple', leaving us with a space of {colours.length} named colours. I'd like to remove colours that are very close to each other too. And also, did you know 'ecru' is a colour? This has sparked a thought about the responsibility we have when filtering or sanitising, and the impact it has on our culture and language. Who am I to remove 'ecru' just because I think it's a rarely used word.
           </p>
       </main>

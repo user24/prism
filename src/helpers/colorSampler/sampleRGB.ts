@@ -1,10 +1,14 @@
 
-const sampleRGB = (canvas, sampleCount = 500) => {
+const sampleRGB = (canvas:HTMLCanvasElement, sampleCount = 500) => {
     if (!canvas) {
         return [];
     }
 
     const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+        return [];
+    }
 
     const samples = [];
     for (let i = 0; i < sampleCount; i++) {
