@@ -105,6 +105,9 @@ export default function Home() {
                 <br /><br />
           </div>}
           <p className={styles.text}>
+              TODO: cluster the sampled points, then find the nearest named colour from the XKCD data.
+          </p>
+          <p className={styles.text}>
               We take {numSamples} samples randomly across the image, plot that into RGB space, cluster the samples to find the most common colours, and then name those colours using the XKCD colour survey data.
           </p>
           <Scatter3dRGB
