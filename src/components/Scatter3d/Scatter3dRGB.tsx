@@ -4,10 +4,10 @@ import {Plotly} from "./next-plotly";
 const Scatter3dRGB = ({points, title = 'scatter plot', hovertemplate = 'rgb(%{x}, %{y}, %{z})'}) => {
     // https://plotly.com/javascript/3d-scatter-plots/
 
-    const x = points.map(p => p.r);
-    const y = points.map(p => p.g);
-    const z = points.map(p => p.b);
-    const colours = points.map(p => `rgb(${p.r}, ${p.g}, ${p.b})`);
+    const x = points.map(p => p.x);
+    const y = points.map(p => p.y);
+    const z = points.map(p => p.z);
+    const colours = points.map(p => `rgb(${p.r || p.x}, ${p.g || p.y}, ${p.b || p.z})`);
     const customdata = points.map(p => p.label);
 
     return <Plotly

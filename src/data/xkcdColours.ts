@@ -3,7 +3,7 @@ import {xkcdColours} from "@/data/rawColours";
 const unsanitisedColours = xkcdColours.split('\n').map(line => {
     const [name, hex, rgb] = line.split('\t');
     const [r, g, b]= rgb.replace('rgb(', '').replace(')','').split(',').map(Number);
-    return {name, hex: `#${hex}`, r, g, b};
+    return {name, r, g, b, hex: `#${hex}`};
 });
 
 const colours = unsanitisedColours.filter(col => {
