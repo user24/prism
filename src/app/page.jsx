@@ -1,13 +1,13 @@
 'use client';
 import styles from "./page.module.css";
 import { useState} from "react";
-import Scatter3dRGB from '@/components/Scatter3d/Scatter3dRGB';
 import ImagePreview from '@/components/ImagePreview/ImagePreview';
 import {sampleRGB} from '@/helpers/colorSampler';
 import SwatchGrid from "@/components/SwatchGrid/SwatchGrid";
 import colours from "@/data/xkcdColours";
 import sentenceCase from "@/helpers/sentenceCase";
 import kmeans from "@/helpers/kmeans";
+import {Scatter3dColours, TYPES} from "@/components/Scatter3d/Scatter3dColours";
 
 // When we get to clustering, consider using a weighted euclidean distance calculation
 // as detailed here: https://www.compuphase.com/cmetric.htm
@@ -18,6 +18,7 @@ export default function Home() {
     const [maxWidth, maxHeight] = [512, 512];
     const [previewWidth, setPreviewWidth] = useState(maxWidth);
     const [previewHeight, setPreviewHeight] = useState(maxHeight);
+    const [colourSpace, setColourSpace] = useState(TYPES.RGB);
     const numSamples = 1000; // 504 fits neatly into a 512 grid
 
     const samples = sampleRGB(canvas, numSamples).map(sample => {
@@ -28,6 +29,13 @@ export default function Home() {
             z: sample.b,
         };
     });
+
+    const hovertemplates = {
+        [TYPES.RGB]: 'rgb(%{x}, %{y}, %{z})',
+        [TYPES.HSV]: 'hsv(%{x}, %{y}, %{z})',
+        [TYPES.XYZ]: 'xyz(%{x}, %{y}, %{z})',
+    }
+
     const {clusters, centroids} = kmeans(samples, 2);
 
     const samplesWithCentroids = [...samples];
@@ -98,20 +106,27 @@ export default function Home() {
               <SwatchGrid swatches={samples} />
 
               <br /><br />
-              <Scatter3dRGB
-                  title={'Plotted in RGB space'}
+              <Scatter3dColours
+                  title={`Plotted in ${colourSpace}`}
+                  type={colourSpace}
+                  hovertemplate={hovertemplates[colourSpace]}
                   points={samples}
               />
                 <br /><br />
           </div>}
+          <h3>Colour Space</h3>
+          <label>HSV: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.HSV} onChange={() => setColourSpace(TYPES.HSV)} /></label>
+          <label>RGB: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.RGB} onChange={() => setColourSpace(TYPES.RGB)} /></label>
+          <label>XYZ: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.XYZ} onChange={() => setColourSpace(TYPES.XYZ)} /></label>
           <p className={styles.text}>
               TODO: cluster the sampled points, then find the nearest named colour from the XKCD data.
           </p>
           <p className={styles.text}>
               We take {numSamples} samples randomly across the image, plot that into RGB space, cluster the samples to find the most common colours, and then name those colours using the XKCD colour survey data.
           </p>
-          <Scatter3dRGB
-              title={'Sanitised XKCD colour space'}
+          <Scatter3dColours
+              title={`Sanitised XKCD colours in ${colourSpace}`}
+              type={colourSpace}
               points={colours.map(col => {
                     return {
                         ...col,
