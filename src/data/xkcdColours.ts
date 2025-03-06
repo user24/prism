@@ -10,6 +10,7 @@ const colours = unsanitisedColours.filter(col => {
     // Removes colours with offensive or unhelpful names
     return !['blue blue', // will seem like an error
         'puke green',
+        'terracota', // terracotta with two Ts (well 3...) already exists
         'bruise',
         'snot green',
         'bile',

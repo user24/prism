@@ -119,13 +119,13 @@ export default function Home() {
           <label>RGB: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.RGB} onChange={() => setColourSpace(TYPES.RGB)} /></label>
           <label>XYZ: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.XYZ} onChange={() => setColourSpace(TYPES.XYZ)} /></label>
           <p className={styles.text}>
-              TODO: cluster the sampled points, then find the nearest named colour from the XKCD data.
+              TODO: cluster the sampled points, then find the nearest named colour from the xkcd data.
           </p>
           <p className={styles.text}>
-              We take {numSamples} samples randomly across the image, plot that into RGB space, cluster the samples to find the most common colours, and then name those colours using the XKCD colour survey data.
+              We take {numSamples} samples randomly across the image, plot that into RGB space, cluster the samples to find the most common colours, and then name those colours using the xkcd colour survey data.
           </p>
           <Scatter3dColours
-              title={`Sanitised XKCD colours in ${colourSpace}`}
+              title={`Sanitised xkcd colours in ${colourSpace}`}
               type={colourSpace}
               points={colours.map(col => {
                     return {
@@ -139,7 +139,7 @@ export default function Home() {
               hovertemplate="%{customdata}<br />rgb(%{x}, %{y}, %{z})"
           />
           <p className={styles.text}>
-              Named colours sourced from the <a href='https://blog.xkcd.com/2010/05/03/color-survey-results/'>XKCD colour survey</a>. Small brag: I got a shoutout <a href='https://blog.xkcd.com/2010/05/15/miscellaneous/comment-page-1/'>from XKCD</a> for a similar visualisation of these results :)<br /><br />
+              Named colours sourced from the <a href='https://blog.xkcd.com/2010/05/03/color-survey-results/'>xkcd colour survey</a>. Small brag: I got a shoutout <a href='https://blog.xkcd.com/2010/05/15/miscellaneous/comment-page-1/'>from Randall</a> for a similar visualisation of these results :)<br /><br />
               I have removed colours with undesirable names such as 'puke green', and judgemental names like 'ugly purple', leaving us with a space of {colours.length} named colours. I'd like to remove colours that are very close to each other too. And also, did you know 'ecru' is a colour? This has sparked a thought about the responsibility we have when filtering or sanitising, and the impact it has on our culture and language. Who am I to remove 'ecru' just because I think it's a rarely used word.
           </p>
       </main>
