@@ -15,7 +15,7 @@ import {Scatter3dColours, TYPES} from "@/components/Scatter3d/Scatter3dColours";
 // Consider using a weighted euclidean distance calculation
 // as detailed here: https://www.compuphase.com/cmetric.htm
 
-const numSamples = 1000;
+const numSamples = 1500;
 const numClusters = 7;
 
 const Swatch = ({colour}) => {
@@ -53,8 +53,16 @@ const augmentRGBWithXYZ = (point) => {
     };
 };
 
-const performKmeans = (canvas, numClusters) => {
-    const samples = sampleRGB(canvas, numSamples).map(augmentRGBWithXYZ);
+const performKmeans = (canvas, numClusters, filterGreys) => {
+    const samples = sampleRGB(canvas, numSamples).filter(colour => {
+        if (!filterGreys) {
+            return true;
+        }
+        // remove greyish colours:
+        const [r, g, b] = [colour.r, colour.g, colour.b];
+        const limit = 20;
+        return Math.abs(r - g) > limit || Math.abs(r - b) > limit || Math.abs(g - b) > limit;
+    }).map(augmentRGBWithXYZ);
 
     const {clusters, centroids} = kmeans(samples, numClusters);
 
@@ -87,6 +95,7 @@ export default function Home() {
     const [previewWidth, setPreviewWidth] = useState(maxWidth);
     const [previewHeight, setPreviewHeight] = useState(maxHeight);
     const [colourSpace, setColourSpace] = useState(TYPES.RGB);
+    const [filterGreys, setFilterGreys] = useState(true);
 
     const hovertemplates = {
         [TYPES.RGB]: 'rgb(%{x}, %{y}, %{z})',
@@ -94,7 +103,7 @@ export default function Home() {
         [TYPES.XYZ]: 'xyz(%{x}, %{y}, %{z})',
     };
 
-    const {samples, centroids, clusters} = canvas ? performKmeans(canvas, numClusters) : {};
+    const {samples, centroids, clusters} = canvas ? performKmeans(canvas, numClusters, filterGreys) : {};
 
     const imageToCanvas = (image) => {
         const canvas = document.createElement('canvas');
@@ -147,17 +156,32 @@ export default function Home() {
                   The image never leaves your device - all processing is done locally.
               </div>
               <br />
-              <input type='file' onChange={handleImageChange} />
+              <input type='file' id={'imageUpload'} onChange={handleImageChange} />
           </label>
           {canvas && <div className={styles.results}>
               <h3>Image Preview:</h3>
-              <ImagePreview canvas={canvas} width={previewWidth} height={previewHeight} />
+              <label for='imageUpload'>
+                  <ImagePreview canvas={canvas} width={previewWidth} height={previewHeight} />
+              </label>
               <br /><br /><br /><br />
               <h3>Detected colours: </h3> {centroids.map(centroid => <Swatch colour={centroid} />)}
-              <br /><br /><br />
+              <br /><br />
+              <p className={styles.text}>
+              <label>
+                  Remove greys: <input type='checkbox' checked={filterGreys} onChange={() => setFilterGreys(!filterGreys)} /><br />
+                  <br />
+                  Mapping colour samples into RGB tends to result in a lot of greys; this is a quick hack to counter this, short of changing the underlying colour model
+              </label>
+              </p>
               <h2>Visualisation of process:</h2>
               <br />
-              <h3>{numSamples} Random Colour Samples:</h3>
+              <h3>~{numSamples} Random Colour Samples:</h3>
+              <p className={styles.text}>
+                  It's fascinating to me that when you take an image of, say, a tree you think "well, it's green" but then the colour samples show that this idea of 'green' is much more derived from the context of it being a tree, than the actual colour data.
+              </p>
+              <p className={styles.text}>
+                  Compare the colours you see in the swatches below, to the colours that come to mind in the source image.
+              </p>
               <SwatchGrid swatches={samples} />
 
               <br /><br />
@@ -167,6 +191,12 @@ export default function Home() {
                   hovertemplate={hovertemplates[colourSpace]}
                   points={samples}
               />
+              <p className={styles.text}>
+                  RGB is not the best colour space, you will probably see similar colours are actually quite spread-out in the space.<br />
+                  There's also often a big streak of greyish colours from black to white, which skews the clustering - this is why we see a lot of greyish colours in the output.<br />
+                  I'd like to remove this diagonal column of greyish colours, or use HSV space instead, which aligns better with how humans see colour.<br />
+                  There's also the option of using a weighted distance function instead of linear euclidean distance, to account for the fact that we don't see all colours equally.
+              </p>
                 <br /><br />
               <Scatter3dColours
                   title={`Centroids, labelled with the nearest colour from the xkcd named colours`}
