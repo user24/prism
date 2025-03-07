@@ -13,6 +13,8 @@ const colours = unsanitisedColours.filter(col => {
         'terracota', // terracotta with two Ts (well 3...) already exists
         'bruise',
         'snot green',
+        'dodger blue', // USA cultural reference
+        'light light blue',
         'macaroni and cheese',
         'bile',
         'shit green',
