@@ -175,13 +175,13 @@ export default function Home() {
                   points={centroids}
               />
           </div>}
-          <h3>Colour Space</h3>
-          <label>HSV: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.HSV} onChange={() => setColourSpace(TYPES.HSV)} /></label>
-          <label>RGB: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.RGB} onChange={() => setColourSpace(TYPES.RGB)} /></label>
-          <label>XYZ: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.XYZ} onChange={() => setColourSpace(TYPES.XYZ)} /></label>
-          <p className={styles.text}>
-              TODO: cluster the sampled points, then find the nearest named colour from the xkcd data.
-          </p>
+          {/*<h3>Colour Space</h3>*/}
+          {/*<label>HSV: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.HSV} onChange={() => setColourSpace(TYPES.HSV)} /></label>*/}
+          {/*<label>RGB: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.RGB} onChange={() => setColourSpace(TYPES.RGB)} /></label>*/}
+          {/*<label>XYZ: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.XYZ} onChange={() => setColourSpace(TYPES.XYZ)} /></label>*/}
+          {/*<p className={styles.text}>*/}
+          {/*    TODO: cluster the sampled points, then find the nearest named colour from the xkcd data.*/}
+          {/*</p>*/}
           <p className={styles.text}>
               We take {numSamples} samples randomly across the image, plot that into RGB space, cluster the samples to find the most common colours, and then name those colours using the xkcd colour survey data.
           </p>
