@@ -101,8 +101,6 @@ const Scatter3dColours = ({points, title = 'scatter plot', type=TYPES.RGB, hover
         zTitle = 'Z';
     }
 
-    console.log(points);
-
     const x = points.map(p => p.x);
     const y = points.map(p => p.y);
     const z = points.map(p => p.z);

@@ -6,11 +6,79 @@ import {sampleRGB} from '@/helpers/colorSampler';
 import SwatchGrid from "@/components/SwatchGrid/SwatchGrid";
 import colours from "@/data/xkcdColours";
 import sentenceCase from "@/helpers/sentenceCase";
-import kmeans from "@/helpers/kmeans";
+import {
+    euclideanDistance,
+    kmeans
+} from "@/helpers/kmeans";
 import {Scatter3dColours, TYPES} from "@/components/Scatter3d/Scatter3dColours";
 
-// When we get to clustering, consider using a weighted euclidean distance calculation
+// Consider using a weighted euclidean distance calculation
 // as detailed here: https://www.compuphase.com/cmetric.htm
+
+const numSamples = 1000;
+const numClusters = 7;
+
+const Swatch = ({colour}) => {
+    const colorIsDark = (bgColor) => {
+        let color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
+        let r = parseInt(color.substring(0, 2), 16); // hexToR
+        let g = parseInt(color.substring(2, 4), 16); // hexToG
+        let b = parseInt(color.substring(4, 6), 16); // hexToB
+        return ((r * 0.299) + (g * 0.587) + (b * 0.114)) <= 186;
+    };
+
+    const classes = [styles.swatch];
+    if (colorIsDark(`#${colour.r.toString(16)}${colour.g.toString(16)}${colour.b.toString(16)}`)) {
+        classes.push(styles.darkSwatch);
+    }
+
+    return <div className={classes.join(' ')} style={{backgroundColor: `rgb(${colour.r}, ${colour.g}, ${colour.b})`}}>{colour.label}</div>;
+}
+
+const augmentXYZWithRGB = (point) => {
+    return {
+        ...point,
+        r: point.x,
+        g: point.y,
+        b: point.z,
+    };
+};
+
+const augmentRGBWithXYZ = (point) => {
+    return {
+        ...point,
+        x: point.r,
+        y: point.g,
+        z: point.b,
+    };
+};
+
+const performKmeans = (canvas, numClusters) => {
+    const samples = sampleRGB(canvas, numSamples).map(augmentRGBWithXYZ);
+
+    const {clusters, centroids} = kmeans(samples, numClusters);
+
+    const centroidsWithRGB = centroids.map(augmentXYZWithRGB);
+    const namedCentroids = centroidsWithRGB.map(centroid => {
+        const nearest = colours.map(col => {
+            return {
+                ...col,
+                dist: euclideanDistance(centroid, {
+                    x: col.r,
+                    y: col.g,
+                    z: col.b
+                })
+            };
+        }).sort((a, b) => a.dist - b.dist)[0];
+
+        return {
+            ...centroid,
+            label: sentenceCase(nearest.name)
+        };
+    });
+
+    return {samples, clusters, centroids: namedCentroids};
+};
 
 export default function Home() {
     const [canvas, setCanvas] = useState(null);
@@ -19,31 +87,14 @@ export default function Home() {
     const [previewWidth, setPreviewWidth] = useState(maxWidth);
     const [previewHeight, setPreviewHeight] = useState(maxHeight);
     const [colourSpace, setColourSpace] = useState(TYPES.RGB);
-    const numSamples = 1000; // 504 fits neatly into a 512 grid
-
-    const samples = sampleRGB(canvas, numSamples).map(sample => {
-        return {
-            ...sample,
-            x: sample.r,
-            y: sample.g,
-            z: sample.b,
-        };
-    });
 
     const hovertemplates = {
         [TYPES.RGB]: 'rgb(%{x}, %{y}, %{z})',
         [TYPES.HSV]: 'hsv(%{x}, %{y}, %{z})',
         [TYPES.XYZ]: 'xyz(%{x}, %{y}, %{z})',
-    }
+    };
 
-    const {clusters, centroids} = kmeans(samples, 2);
-
-    const samplesWithCentroids = [...samples];
-    // centroids.forEach(centroid => {
-    //     samplesWithCentroids.push({
-    //         centroid
-    //     });
-    // });
+    const {samples, centroids, clusters} = canvas ? performKmeans(canvas, numClusters) : {};
 
     const imageToCanvas = (image) => {
         const canvas = document.createElement('canvas');
@@ -67,7 +118,7 @@ export default function Home() {
 
         // Draw image, scaled to canvas size
         const scale = Math.min(canvas.width / image.width, canvas.height / image.height);
-        ctx.drawImage(image, 0, 0, image.width * scale, image.height * scale); // gives IDE error about too many args, but it's correct
+        ctx.drawImage(image, 0, 0, image.width * scale, image.height * scale);
 
         return canvas;
     }
@@ -102,6 +153,10 @@ export default function Home() {
               <h3>Image Preview:</h3>
               <ImagePreview canvas={canvas} width={previewWidth} height={previewHeight} />
               <br /><br /><br /><br />
+              <h3>Detected colours: </h3> {centroids.map(centroid => <Swatch colour={centroid} />)}
+              <br /><br /><br />
+              <h2>Visualisation of process:</h2>
+              <br />
               <h3>{numSamples} Random Colour Samples:</h3>
               <SwatchGrid swatches={samples} />
 
@@ -113,6 +168,12 @@ export default function Home() {
                   points={samples}
               />
                 <br /><br />
+              <Scatter3dColours
+                  title={`Centroids, labelled with the nearest colour from the xkcd named colours`}
+                  type={colourSpace}
+                  hovertemplate={`%{customdata}<br />${hovertemplates[colourSpace]}`}
+                  points={centroids}
+              />
           </div>}
           <h3>Colour Space</h3>
           <label>HSV: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.HSV} onChange={() => setColourSpace(TYPES.HSV)} /></label>
@@ -136,7 +197,7 @@ export default function Home() {
                         z: col.b
                     };
               })}
-              hovertemplate="%{customdata}<br />rgb(%{x}, %{y}, %{z})"
+              hovertemplate={`%{customdata}<br />${hovertemplates[colourSpace]}`}
           />
           <p className={styles.text}>
               Named colours sourced from the <a href='https://blog.xkcd.com/2010/05/03/color-survey-results/'>xkcd colour survey</a>. Small brag: I got a shoutout <a href='https://blog.xkcd.com/2010/05/15/miscellaneous/comment-page-1/'>from Randall</a> for a similar visualisation of these results :)<br /><br />
