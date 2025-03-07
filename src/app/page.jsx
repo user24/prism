@@ -19,16 +19,12 @@ const numSamples = 1500;
 const numClusters = 7;
 
 const Swatch = ({colour}) => {
-    const colorIsDark = (bgColor) => {
-        let color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
-        let r = parseInt(color.substring(0, 2), 16); // hexToR
-        let g = parseInt(color.substring(2, 4), 16); // hexToG
-        let b = parseInt(color.substring(4, 6), 16); // hexToB
+    const colorIsDark = ({r, g, b}) => {
         return ((r * 0.299) + (g * 0.587) + (b * 0.114)) <= 186;
     };
 
     const classes = [styles.swatch];
-    if (colorIsDark(`#${colour.r.toString(16)}${colour.g.toString(16)}${colour.b.toString(16)}`)) {
+    if (colorIsDark(colour)) {
         classes.push(styles.darkSwatch);
     }
 
@@ -64,9 +60,16 @@ const performKmeans = (canvas, numClusters, filterGreys) => {
         return Math.abs(r - g) > limit || Math.abs(r - b) > limit || Math.abs(g - b) > limit;
     }).map(augmentRGBWithXYZ);
 
-    const {clusters, centroids} = kmeans(samples, numClusters);
+    const {clusters, centroids, initalCentroids} = kmeans(samples, numClusters);
+    //const centroids =initalCentroids;
 
-    const centroidsWithRGB = centroids.map(augmentXYZWithRGB);
+    const centroidsWithRGB = centroids.filter((centroid, i) => {
+        const isValid = !isNaN(centroid.x) && !isNaN(centroid.y) && !isNaN(centroid.z);
+        return isValid && centroids.findIndex(c => {
+            return c.x === centroid.x && c.y === centroid.y && c.z === centroid.z;
+        }) === i;
+    }).map(augmentXYZWithRGB);
+
     const namedCentroids = centroidsWithRGB.map(centroid => {
         const nearest = colours.map(col => {
             return {
@@ -84,6 +87,8 @@ const performKmeans = (canvas, numClusters, filterGreys) => {
             label: sentenceCase(nearest.name)
         };
     });
+
+    console.log({centroids, centroidsWithRGB, namedCentroids})
 
     return {samples, clusters, centroids: namedCentroids};
 };
@@ -160,11 +165,11 @@ export default function Home() {
           </label>
           {canvas && <div className={styles.results}>
               <h3>Image Preview:</h3>
-              <label for='imageUpload'>
+              <label htmlFor='imageUpload'>
                   <ImagePreview canvas={canvas} width={previewWidth} height={previewHeight} />
               </label>
               <br /><br /><br /><br />
-              <h3>Detected colours: </h3> {centroids.map(centroid => <Swatch colour={centroid} />)}
+              <h3>Detected colours: </h3> {centroids.map(centroid => <Swatch colour={centroid} key={JSON.stringify(centroid)} />)}
               <br /><br />
               <p className={styles.text}>
               <label>

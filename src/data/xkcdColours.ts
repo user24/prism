@@ -12,6 +12,7 @@ const colours = unsanitisedColours.filter(col => {
         'puke green',
         'terracota', // terracotta with two Ts (well 3...) already exists
         'bruise',
+        'golden rod', // goldenrod already exists
         'snot green',
         'dodger blue', // USA cultural reference
         'light light blue',
