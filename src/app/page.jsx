@@ -219,6 +219,7 @@ export default function Home() {
           </p>
           <Scatter3dColours
               title={`Sanitised xkcd colours in ${colourSpace}`}
+              className={styles.plotly}
               type={colourSpace}
               points={colours.map(col => {
                     return {

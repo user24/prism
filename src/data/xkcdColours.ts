@@ -1,9 +1,10 @@
 import {xkcdColours} from "@/data/rawColours";
+import {hex2Rgb} from "@/components/Scatter3d/Scatter3dColours";
 
 const unsanitisedColours = xkcdColours.split('\n').map(line => {
-    const [name, hex, rgb] = line.split('\t');
-    const [r, g, b]= rgb.replace('rgb(', '').replace(')','').split(',').map(Number);
-    return {name, r, g, b, hex: `#${hex}`};
+    const [name, hex] = line.split('\t');
+    const {r, g, b} = hex2Rgb(hex);
+    return {name, r, g, b, hex};
 });
 
 const colours = unsanitisedColours.filter(col => {

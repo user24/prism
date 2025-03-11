@@ -4,7 +4,7 @@ import {forwardRef, useEffect, useId, useImperativeHandle, useRef, useState} fro
 export const Plotly = dynamic(() =>
         // via: https://dev.to/composite/how-to-integrate-plotlyjs-on-nextjs-14-with-app-router-1loj
         import('plotly.js-dist-min').then(({ newPlot, purge }) => {
-            const Plotly = forwardRef(({ id, className, data, layout, config }, ref) => {
+            const Plotly = forwardRef(({ id, className, data, layout, config, style, useResizeHandler }, ref) => {
                 const originId = useId();
                 const realId = id || originId;
                 const originRef = useRef(null);
@@ -13,7 +13,7 @@ export const Plotly = dynamic(() =>
                 useEffect(() => {
                     let instance;
                     originRef.current &&
-                    newPlot(originRef.current, data, layout, config).then((ref) => setHandle((instance = ref)));
+                    newPlot(originRef.current, data, layout, config, style, useResizeHandler).then((ref) => setHandle((instance = ref)));
                     return () => {
                         instance && purge(instance);
                     };

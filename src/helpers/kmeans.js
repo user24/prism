@@ -14,7 +14,7 @@ const randomBetween = (min, max) => {
 };
 
 const kmeans = (data, clusterCount = 2) => {
-    const log = true;
+    const log = false;
     const centroids = [];
     const clusters = [];
     let clustersHaveConverged = false;

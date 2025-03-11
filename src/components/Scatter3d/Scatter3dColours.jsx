@@ -49,7 +49,7 @@ function hex2Rgb(hex) {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16)
-    } : null;
+    } : {};
 }
 
 function hsv2Rgb(h, s, v) {
@@ -118,7 +118,7 @@ function hsv2Rgb(h, s, v) {
 };
 
 // TODO: define the types for the props
-const Scatter3dColours = ({points, title = 'scatter plot', type=TYPES.RGB, hovertemplate = 'rgb(%{r}, %{g}, %{b})'}) => {
+const Scatter3dColours = ({points, title = 'scatter plot', type=TYPES.RGB, hovertemplate = 'rgb(%{r}, %{g}, %{b})', className=''}) => {
     // example: https://plotly.com/javascript/3d-scatter-plots/
 
     let xTitle = 'Red';
@@ -173,11 +173,13 @@ const Scatter3dColours = ({points, title = 'scatter plot', type=TYPES.RGB, hover
                     name: ''
                 }
             ]}
-
+            useResizeHandle={true}
             layout={ {
                 paper_bgcolor: '#fafafa',
-                width: 1000,
-                height: 1000,
+                className,
+                width: 800,
+                height: 800,
+                autosize: true,
                 title: {text: title},
                 scene: {
                     xaxis: {title: {text: xTitle}},
@@ -193,6 +195,7 @@ export default Scatter3dColours;
 export {
     rgb2hsv,
     hsv2Rgb,
+    hex2Rgb,
     TYPES,
     Scatter3dColours
 };
