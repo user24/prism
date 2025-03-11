@@ -198,13 +198,7 @@ export default function Home() {
                   hovertemplate={hovertemplates[colourSpace]}
                   points={samples}
               />
-              <p className={styles.text}>
-                  RGB is not the best colour space, you will probably see similar colours are actually quite spread-out in the space.<br />
-                  There's also often a big streak of greyish colours from black to white, which skews the clustering - this is why we see a lot of greyish colours in the output.<br />
-                  I'd like to remove this diagonal column of greyish colours, or use HSV space instead, which aligns better with how humans see colour.<br />
-                  There's also the option of using a weighted distance function instead of linear euclidean distance, to account for the fact that we don't see all colours equally.
-              </p>
-                <br /><br />
+               <br /><br />
               <Scatter3dColours
                   title={`Centroids, labelled with the nearest colour from the xkcd named colours`}
                   type={colourSpace}
@@ -217,8 +211,11 @@ export default function Home() {
           {/*<label>RGB: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.RGB} onChange={() => setColourSpace(TYPES.RGB)} /></label>*/}
           {/*<label>XYZ: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.XYZ} onChange={() => setColourSpace(TYPES.XYZ)} /></label>*/}
           <p className={styles.text}>
-              We take {numSamples} samples randomly across the image, plot that into RGB space, cluster the samples to find the most common colours, and then name those colours using the xkcd colour survey data.
+              We take {numSamples} samples randomly across the image, plot that into HSV space, cluster the samples to find the most common colours, and then match the center of each cluster to the nearest name from the xkcd colour survey data.
+              <br /><br />
+              Really HSV should be shown in a cylinder, but I'm plotting it in a simply 3d scatter - it actually still works quite well, but a future enhancement would be to properly represent the colour space as it should be. You'll notice that reds appear at opposite ends of the hsv 'cube', something that would be fixed by projecting it into a cylinder as it should be.
           </p>
+
           <Scatter3dColours
               title={`Sanitised xkcd colours in ${colourSpace}`}
               className={styles.plotly}
