@@ -1,6 +1,6 @@
 'use client';
 import styles from "./page.module.css";
-import { useState} from "react";
+import { useState, useEffect } from "react";
 import ImagePreview from '@/components/ImagePreview/ImagePreview';
 import {sampleRGB} from '@/helpers/colorSampler';
 import SwatchGrid from "@/components/SwatchGrid/SwatchGrid";
@@ -10,7 +10,7 @@ import {
     euclideanDistance,
     kmeans
 } from "@/helpers/kmeans";
-import {Scatter3dColours, TYPES} from "@/components/Scatter3d/Scatter3dColours";
+import {Scatter3dColours, rgb2hsv, hsv2Rgb, TYPES} from "@/components/Scatter3d/Scatter3dColours";
 
 // Consider using a weighted euclidean distance calculation
 // as detailed here: https://www.compuphase.com/cmetric.htm
@@ -31,23 +31,15 @@ const Swatch = ({colour}) => {
     return <div className={classes.join(' ')} style={{backgroundColor: `rgb(${colour.r}, ${colour.g}, ${colour.b})`}}>{colour.label}</div>;
 }
 
-const augmentXYZWithRGB = (point) => {
+const plotPointInSpaceUsingHSV = (point) => {
+    const {h, s, v} = rgb2hsv(point.r, point.g, point.b);
     return {
         ...point,
-        r: point.x,
-        g: point.y,
-        b: point.z,
+        x: h,
+        y: s,
+        z: v
     };
-};
-
-const augmentRGBWithXYZ = (point) => {
-    return {
-        ...point,
-        x: point.r,
-        y: point.g,
-        z: point.b,
-    };
-};
+}
 
 const performKmeans = (canvas, numClusters, filterGreys) => {
     const samples = sampleRGB(canvas, numSamples).filter(colour => {
@@ -56,29 +48,19 @@ const performKmeans = (canvas, numClusters, filterGreys) => {
         }
         // remove greyish colours:
         const [r, g, b] = [colour.r, colour.g, colour.b];
-        const limit = 20;
-        return Math.abs(r - g) > limit || Math.abs(r - b) > limit || Math.abs(g - b) > limit;
-    }).map(augmentRGBWithXYZ);
+        const threshold = 20;
+        return Math.abs(r - g) > threshold || Math.abs(r - b) > threshold || Math.abs(g - b) > threshold;
+    }).map(plotPointInSpaceUsingHSV); // TODO: make the colour space configurable
 
     const {clusters, centroids, initalCentroids} = kmeans(samples, numClusters);
     //const centroids =initalCentroids;
 
-    const centroidsWithRGB = centroids.filter((centroid, i) => {
-        const isValid = !isNaN(centroid.x) && !isNaN(centroid.y) && !isNaN(centroid.z);
-        return isValid && centroids.findIndex(c => {
-            return c.x === centroid.x && c.y === centroid.y && c.z === centroid.z;
-        }) === i;
-    }).map(augmentXYZWithRGB);
-
-    const namedCentroids = centroidsWithRGB.map(centroid => {
+    const namedCentroids = centroids.map(centroid => {
         const nearest = colours.map(col => {
+            const hsvPlottedPoint = plotPointInSpaceUsingHSV(col);
             return {
-                ...col,
-                dist: euclideanDistance(centroid, {
-                    x: col.r,
-                    y: col.g,
-                    z: col.b
-                })
+                ...hsvPlottedPoint,
+                dist: euclideanDistance(centroid, hsvPlottedPoint)
             };
         }).sort((a, b) => a.dist - b.dist)[0];
 
@@ -86,9 +68,18 @@ const performKmeans = (canvas, numClusters, filterGreys) => {
             ...centroid,
             label: sentenceCase(nearest.name)
         };
+    }).map(centroid => {
+        const {r, g, b} = hsv2Rgb(centroid.x, centroid.y, centroid.z);
+        console.log({r, g, b, centroid});
+        return {
+            ...centroid,
+            r,
+            g,
+            b
+        };
     });
 
-    console.log({centroids, centroidsWithRGB, namedCentroids})
+    console.log({centroids, namedCentroids});
 
     return {samples, clusters, centroids: namedCentroids};
 };
@@ -99,8 +90,11 @@ export default function Home() {
     const [maxWidth, maxHeight] = [512, 512];
     const [previewWidth, setPreviewWidth] = useState(maxWidth);
     const [previewHeight, setPreviewHeight] = useState(maxHeight);
-    const [colourSpace, setColourSpace] = useState(TYPES.RGB);
+    const [colourSpace, setColourSpace] = useState(TYPES.HSV);
     const [filterGreys, setFilterGreys] = useState(true);
+    const [samples, setSamples] = useState([]);
+    const [clusters, setClusters] = useState(null);
+    const [centroids, setCentroids] = useState(null);
 
     const hovertemplates = {
         [TYPES.RGB]: 'rgb(%{x}, %{y}, %{z})',
@@ -108,7 +102,14 @@ export default function Home() {
         [TYPES.XYZ]: 'xyz(%{x}, %{y}, %{z})',
     };
 
-    const {samples, centroids, clusters} = canvas ? performKmeans(canvas, numClusters, filterGreys) : {};
+    useEffect(() => {
+        if (canvas && !samples.length) {
+            const {samples, centroids, clusters} = performKmeans(canvas, numClusters, filterGreys);
+            setSamples(samples);
+            setCentroids(centroids);
+            setClusters(clusters);
+        }
+    }, [canvas]);
 
     const imageToCanvas = (image) => {
         const canvas = document.createElement('canvas');
@@ -144,6 +145,7 @@ export default function Home() {
         reader.onload = (e) => {
             const image = new Image();
             image.onload = () => {
+                setSamples([]);
                 setCanvas(imageToCanvas(image));
             };
             image.src = e.target.result;
@@ -163,7 +165,7 @@ export default function Home() {
               <br />
               <input type='file' id={'imageUpload'} onChange={handleImageChange} />
           </label>
-          {canvas && <div className={styles.results}>
+          {(samples.length > 0) && <div className={styles.results}>
               <h3>Image Preview:</h3>
               <label htmlFor='imageUpload'>
                   <ImagePreview canvas={canvas} width={previewWidth} height={previewHeight} />
@@ -174,8 +176,6 @@ export default function Home() {
               <p className={styles.text}>
               <label>
                   Remove greys: <input type='checkbox' checked={filterGreys} onChange={() => setFilterGreys(!filterGreys)} /><br />
-                  <br />
-                  Mapping colour samples into RGB tends to result in a lot of greys; this is a quick hack to counter this, short of changing the underlying colour model
               </label>
               </p>
               <h2>Visualisation of process:</h2>
@@ -214,9 +214,6 @@ export default function Home() {
           {/*<label>HSV: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.HSV} onChange={() => setColourSpace(TYPES.HSV)} /></label>*/}
           {/*<label>RGB: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.RGB} onChange={() => setColourSpace(TYPES.RGB)} /></label>*/}
           {/*<label>XYZ: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.XYZ} onChange={() => setColourSpace(TYPES.XYZ)} /></label>*/}
-          {/*<p className={styles.text}>*/}
-          {/*    TODO: cluster the sampled points, then find the nearest named colour from the xkcd data.*/}
-          {/*</p>*/}
           <p className={styles.text}>
               We take {numSamples} samples randomly across the image, plot that into RGB space, cluster the samples to find the most common colours, and then name those colours using the xkcd colour survey data.
           </p>
@@ -226,10 +223,7 @@ export default function Home() {
               points={colours.map(col => {
                     return {
                         ...col,
-                        label: sentenceCase(col.name),
-                        x: col.r,
-                        y: col.g,
-                        z: col.b
+                        label: sentenceCase(col.name)
                     };
               })}
               hovertemplate={`%{customdata}<br />${hovertemplates[colourSpace]}`}

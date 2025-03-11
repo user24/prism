@@ -1,5 +1,11 @@
 import {Plotly} from "./next-plotly";
 
+const TYPES = {
+    HSV: 'HSV',
+    RGB: 'RGB',
+    XYZ: 'XYZ'
+};
+
 function rgb2hsv (r, g, b) {
     let rabs, gabs, babs, rr, gg, bb, h, s, v, diff, diffc, percentRoundFn;
     rabs = r / 255;
@@ -37,7 +43,59 @@ function rgb2hsv (r, g, b) {
     };
 }
 
-const rgb2xyz = (r, g, b) => {
+function hex2Rgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+function hsv2Rgb(h, s, v) {
+    // Nicked from https://www.rapidtables.com/convert/color/hsv-to-rgb.html
+    s/=100;
+    v/=100;
+    const C = v*s;
+    const hh = h/60;
+    const X = C*(1-Math.abs((hh%2)-1));
+    let r = 0, g = 0, b = 0;
+    if( hh>=0 && hh<1 ) {
+        r = C;
+        g = X;
+    } else if( hh>=1 && hh<2 ) {
+        r = X;
+        g = C;
+    } else if( hh>=2 && hh<3 ) {
+        g = C;
+        b = X;
+    } else if( hh>=3 && hh<4 ) {
+        g = X;
+        b = C;
+    } else if( hh>=4 && hh<5 ) {
+        r = X;
+        b = C;
+    } else {
+        r = C;
+        b = X;
+    }
+    const m = v-C;
+    r += m;
+    g += m;
+    b += m;
+    r *= 255.0;
+    g *= 255.0;
+    b *= 255.0;
+    r = Math.round(r);
+    g = Math.round(g);
+    b = Math.round(b);
+
+    return {
+        r, g, b
+    };
+}
+
+    const rgb2xyz = (r, g, b) => {
     // via: https://dev.to/bytebodger/using-different-color-spaces-to-compare-colors-5agg
     const convert = color => {
         color = color / 255;
@@ -57,12 +115,6 @@ const rgb2xyz = (r, g, b) => {
         y,
         z,
     };
-};
-
-const TYPES = {
-    HSV: 'HSV',
-    RGB: 'RGB',
-    XYZ: 'XYZ'
 };
 
 // TODO: define the types for the props
@@ -139,6 +191,8 @@ const Scatter3dColours = ({points, title = 'scatter plot', type=TYPES.RGB, hover
 export default Scatter3dColours;
 
 export {
+    rgb2hsv,
+    hsv2Rgb,
     TYPES,
     Scatter3dColours
 };
