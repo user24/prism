@@ -68,23 +68,20 @@ const performKmeans = (canvas, numClusters, filterGreys) => {
             ...centroid,
             label: sentenceCase(nearest.name)
         };
-    }).filter(((centroid, i, centroids)) => {
+    }).filter((centroid, i, centroids) => {
         // remove centroids with different XYZs, so were not caught by the kmeans dedupe,
         // but that still map to the same name
         return centroids.findIndex(c => c.label === centroid.label) === i;
     }).map(centroid => {
-            const {r, g, b} = hsv2Rgb(centroid.x, centroid.y, centroid.z);
-            console.log({r, g, b, centroid});
-            return {
-                ...centroid,
-                r,
-                g,
-                b
-            };
-        });
-    }
-
-    console.log({centroids, namedCentroids});
+        const {r, g, b} = hsv2Rgb(centroid.x, centroid.y, centroid.z);
+        console.log({r, g, b, centroid});
+        return {
+            ...centroid,
+            r,
+            g,
+            b
+        };
+    });
 
     return {samples, clusters, centroids: namedCentroids};
 };
