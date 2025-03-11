@@ -17,7 +17,6 @@ const kmeans = (data, clusterCount = 2) => {
     const log = true;
     const centroids = [];
     const clusters = [];
-    let iterations = 0;
     let clustersHaveConverged = false;
     let initalCentroids;
 
@@ -29,7 +28,9 @@ const kmeans = (data, clusterCount = 2) => {
     const maxZ = Math.max(...data.map(d => d.z));
     const minZ = Math.min(...data.map(d => d.z));
 
-    log && console.log({minX, maxX, minY, maxY, minZ, maxZ});
+    if (log) {
+        console.log({minX, maxX, minY, maxY, minZ, maxZ})
+    }
 
     // Set initial centroids
     for (let i = 0; i < clusterCount; i++) {
@@ -58,7 +59,6 @@ const kmeans = (data, clusterCount = 2) => {
             //log && console.log({nearestCentroid, datum});
             clusters[nearestCentroid].push(datum);
         });
-        iterations++;
 
         // If the centroids haven't changed since last time, we can stop.
         clustersHaveConverged = JSON.stringify(centroids) === centroidsAtStart;
@@ -83,8 +83,9 @@ const kmeans = (data, clusterCount = 2) => {
         }) === i;
     });
 
-    log && console.log({clusters, centroids, nonNullCentroids});
-
+    if (log) {
+        console.log({clusters, centroids, nonNullCentroids});
+    }
     return {clusters, initalCentroids, centroids: nonNullCentroids };
 };
 
