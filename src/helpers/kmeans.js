@@ -1,5 +1,17 @@
-const euclideanDistance = (a, b) => {
-    return Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z);
+const euclideanDistance = (objA, objB) => {
+    const a = [objA.x, objA.y, objA.z];
+    const b = [objB.x, objB.y, objB.z];
+
+    return euclideanDistanceArray(a, b);
+}
+
+const euclideanDistanceArray = (a, b) => {
+    // Works on points of any number of dimensions
+    let sum = 0;
+    for (let n = 0; n < a.length; n++) {
+        sum += Math.pow(a[n] - b[n], 2);
+    }
+    return Math.sqrt(sum);
 };
 
 const getMiddleOfCluster = (cluster) => {
