@@ -174,17 +174,17 @@ const Scatter3dColours = ({points, title = 'scatter plot', type=TYPES.RGB, hover
                 }
             ]}
             useResizeHandle={true}
+            className={className}
             layout={ {
                 paper_bgcolor: '#fafafa',
-                className,
                 width: 800,
                 height: 800,
                 autosize: true,
                 title: {text: title},
                 scene: {
-                    xaxis: {title: {text: xTitle}},
-                    yaxis: {title: {text: yTitle}},
-                    zaxis: {title: {text: zTitle}}
+                    xaxis: {title: {text: xTitle}, range: [0, 375]},
+                    yaxis: {title: {text: yTitle}, range: [0, 100]},
+                    zaxis: {title: {text: zTitle}, range: [0, 100]}
                 }
             } }
         />;

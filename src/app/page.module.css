@@ -18,7 +18,9 @@
 
 .imagePreview {
   border: 1px solid var(--gray-alpha-200);
+  max-width: 75vw;
 }
+
 .results {
   display: block;
   text-align: center;
@@ -55,3 +57,30 @@
   color: white;
 }
 
+@media (max-width: 911px) {
+  .plotly {
+    max-width: 75vw;
+    scale: 0.75;
+  }
+}
+
+@media (max-width: 720px) {
+  .plotly {
+    max-width: 75vw;
+    scale: 0.6;
+  }
+}
+
+@media (max-width: 600px) {
+  .plotly {
+    max-width: 75vw;
+    scale: 0.4;
+  }
+}
+
+@media (max-width: 400px) {
+  .plotly {
+    max-width: 75vw;
+    scale: 0.2;
+  }
+}

@@ -4,6 +4,9 @@ import {hex2Rgb} from "@/components/Scatter3d/Scatter3dColours";
 const unsanitisedColours = xkcdColours.split('\n').map(line => {
     const [name, hex] = line.split('\t');
     const {r, g, b} = hex2Rgb(hex);
+    // if (name === 'ugly purple') {
+    //     console.log(r,g,b);
+    // }
     return {name, r, g, b, hex};
 });
 
