@@ -230,10 +230,10 @@ export default function Home() {
               <p className={styles.text}>
                   It's fascinating to me that when you take an image of, say, a tree you think "well, it's green" but then the colour samples often show that this idea of 'green' is much more derived from the context of it being a tree, than the actual colour data.
               </p>
-              <p className={styles.text}>The way humans percieve colour is intimately wrapped up with the layers of meaning we apply to the world in general, our eyes and brains pick out certain objects or evolutionarily important colours and present a view of the world which is abstracted from reality from the very moment of perception.
+              <p className={styles.text}>The way humans percieve colour is <a href={'https://philosophyalevel.com/aqa-philosophy-revision-notes/theories-of-perception/'}>intimately wrapped up with layers of meaning we apply to the world</a>; our brains pick out certain objects, or our eyes are tuned to prioritise evolutionarily important colours, thus our view of the world is abstracted from reality from the very moment of perception.
               </p>
               <p className={styles.text}>
-                  Sometimes a colour happens to be named in a way that seems eerily accurate, for example a photo of a road might be labelled 'concrete grey', or a sky might get tagged 'cloudy blue'. If you didn't know about the underlying algorithm, you might give the AI more credit than it's due. Let's pull back the curtain and see there's no ghost in this machine :)
+                  Additionally, sometimes a colour happens to be named in a way that seems eerily accurate, for example a photo of a road might be labelled 'concrete grey', or a sky might get tagged 'cloudy blue'. If you didn't know about the underlying algorithm, you might be tempted to give the AI more credit than it's due. Let's pull back the curtain and see there's no ghost in this machine :)
               </p>
 
               <p className={styles.text}>
