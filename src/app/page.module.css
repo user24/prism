@@ -34,7 +34,12 @@
   grid-row-start: 2;
   max-width: 75vw;
 }
-
+.hr {
+  width: 100%;
+  height: 1px;
+  border: none;
+  border-bottom: 1px solid lightgray;
+}
 .text {
   text-align: left;
   width: 100%;

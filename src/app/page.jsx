@@ -235,8 +235,8 @@ export default function Home() {
           {/*<label>XYZ: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.XYZ} onChange={() => setColourSpace(TYPES.XYZ)} /></label>*/}
 
           <p className={styles.text}>
-              <strong>Prism</strong> takes colour samples from an image, clusters them into a few groups of similar colours, and then compares the center of those clusters to pre-named colours, to output for example 'blue and yellow' from an image of a beach. <br />
-              The webcomic <a href='https://blog.xkcd.com/2010/05/03/color-survey-results/'>xkcd</a> once ran an experiment where 5 million random colours were named by 222,500 visitors. The visualisation below shows the most common {colours.length} names, which are the data we use to name the colours - hover over a colour point to see its name.<br />
+              <strong>Prism</strong> takes colour samples from an image, clusters them into a few groups of similar colours, and then compares the center of those clusters to pre-named colours, to output for example 'blue and yellow' from an image of a beach. Try it out!<br /><br />
+              The webcomic <a href='https://blog.xkcd.com/2010/05/03/color-survey-results/'>xkcd</a> once ran an experiment where 5 million random colours were named by 222,500 visitors. The visualisation below shows the most common {colours.length} names, which are the data we use to name the colours - hover over a colour point to see its name.<br /><br />
               Small brag: I got a shoutout <a href='https://blog.xkcd.com/2010/05/15/miscellaneous/comment-page-1/'>from Randall</a> for a similar visualisation :)
           </p>
           <Scatter3dColours
@@ -254,11 +254,15 @@ export default function Home() {
           <p className={styles.text}>
               For the purposes of <strong>Prism</strong> I have removed colours with undesirable names such as Puke Green <Swatch colour={{r: 154, g: 174, b: 7}} /> and judgemental names like Ugly Purple <Swatch colour={{r: 164, g: 66, b: 160}} /> (I actually quite like that one), leaving us with a space of {colours.length} named colours. I've thought about removing colours that are very close to each other too. But then, maybe Cobalt Blue <Swatch colour={{r: 3, g: 10, b: 167}} />really is different to Royal Blue <Swatch colour={{r: 5, g: 4, b: 170}} />
           <br /><br />
-          And also, did you know 'ecru' is a colour? I was on the verge of removing it because I'd never heard of it, but this sparked a thought about the responsibility we have and the impact it has on our culture and language. Not just when filtering, sanitising, and removing outliers, but when creating tools and publishing information more generally too. Who am I to remove 'ecru' just because I think it's a rarely used word. Clearly it's common enough to feature in the top {colours.length}.
+          Did you know 'ecru' is a colour? I was on the verge of removing it because I'd never heard of it, but this sparked a thought about the responsibility we have and the impact it has on our culture and language. Not just when filtering, sanitising, and removing outliers, but when creating tools and publishing information more generally too. Who am I to remove 'ecru' just because I think it's a rarely used word. Clearly it's common enough to feature in the top {colours.length}.
               <br /><br />
               We must be careful not to bake our biases into the software we write.
           </p>
-          <Swatch colour={{r: 254, g: 255, b: 202, label:'(ecru, apparently)'}} />
+          <hr className={styles.hr} />
+          <p className={styles.text}>
+              Who made this? <strong>Hi!</strong> I'm <a href={'https://solidred.co.uk'}>Howard Yeend</a>, a lead engineer at <a href={'https://os.uk'}>Ordnance Survey</a>. My pronouns are he/they, and I love the web. I'm keen on building happy teams who collaborate fluidly to create innovative solutions to strategically relevant problems.
+          </p>
+          <Swatch colour={{r: 254, g: 255, b: 202, label:'{ecru, apparently}'}} />
       </main>
     </div>
   );
