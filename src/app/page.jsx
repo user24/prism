@@ -213,7 +213,7 @@ export default function Home() {
               </p>
               <Scatter3dColours
                   className={styles.plotly}
-                  title={`Plotted in ${colourSpace}`}
+                  title={`Your image plotted in ${colourSpace}`}
                   type={colourSpace}
                   hovertemplate={hovertemplates[colourSpace]}
                   points={samples}
