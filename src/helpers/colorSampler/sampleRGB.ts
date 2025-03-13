@@ -23,7 +23,7 @@ const sampleRGB = (canvas:HTMLCanvasElement, sampleCount = 500) => {
             b: pixel.data[2],
         });
     }
-
+    //console.log(samples.map(sample => `${sample.r},${sample.g},${sample.b}`).join('\n'));
     return samples;
 };
 

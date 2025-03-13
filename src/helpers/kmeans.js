@@ -55,6 +55,7 @@ const kmeans = (data, clusterCount = 2) => {
         // Set up empty cluster
         clusters[i] = [];
     }
+    initalCentroids = JSON.parse(JSON.stringify(centroids));
 
     do {
         // Freeze the output from the last loop for comparison later

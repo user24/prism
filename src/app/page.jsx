@@ -16,7 +16,7 @@ import {Scatter3dColours, rgb2hsv, hsv2Rgb, TYPES} from "@/components/Scatter3d/
 // as detailed here: https://www.compuphase.com/cmetric.htm
 
 const numSamples = 1500;
-const numClusters = 7;
+const numClusters = 5;
 
 const Swatch = ({colour}) => {
     const colorIsDark = ({r, g, b}) => {
@@ -41,7 +41,17 @@ const plotPointInSpaceUsingHSV = (point) => {
     };
 }
 
-const performKmeans = (canvas, numClusters, filterGreys) => {
+
+const plotPointInSpaceUsingRGB = (point) => {
+    return {
+        ...point,
+        x: point.r,
+        y: point.g,
+        z: point.b
+    };
+}
+
+const performKmeans = (canvas, numClusters, filterGreys, colourSpace) => {
     const samples = sampleRGB(canvas, numSamples).filter(colour => {
         if (!filterGreys) {
             return true;
@@ -50,9 +60,10 @@ const performKmeans = (canvas, numClusters, filterGreys) => {
         const [r, g, b] = [colour.r, colour.g, colour.b];
         const threshold = 20;
         return Math.abs(r - g) > threshold || Math.abs(r - b) > threshold || Math.abs(g - b) > threshold;
-    }).map(plotPointInSpaceUsingHSV); // TODO: make the colour space configurable
+    }).map(colourSpace === TYPES.RGB ? plotPointInSpaceUsingRGB : plotPointInSpaceUsingHSV);
 
     const {clusters, centroids, initalCentroids} = kmeans(samples, numClusters);
+    console.log({initalCentroids, centroids})
     //const centroids =initalCentroids;
 
     const namedCentroids = centroids.map(centroid => {
@@ -93,7 +104,7 @@ export default function Home() {
     const [previewWidth, setPreviewWidth] = useState(maxWidth);
     const [previewHeight, setPreviewHeight] = useState(maxHeight);
     const [colourSpace, setColourSpace] = useState(TYPES.HSV);
-    const [filterGreys, setFilterGreys] = useState(true);
+    const [filterGreys, setFilterGreys] = useState(false);
     const [samples, setSamples] = useState([]);
     const [clusters, setClusters] = useState(null);
     const [centroids, setCentroids] = useState(null);
@@ -106,7 +117,7 @@ export default function Home() {
 
     useEffect(() => {
         if (canvas && !samples.length) {
-            const {samples, centroids, clusters} = performKmeans(canvas, numClusters, filterGreys);
+            const {samples, centroids, clusters} = performKmeans(canvas, numClusters, filterGreys, colourSpace);
             setSamples(samples);
             setCentroids(centroids);
             setClusters(clusters);
@@ -260,7 +271,9 @@ export default function Home() {
           </p>
           <hr className={styles.hr} />
           <p className={styles.text}>
-              Who made this? <strong>Hi!</strong> I'm <a href={'https://solidred.co.uk'}>Howard Yeend</a>, a lead engineer at <a href={'https://os.uk'}>Ordnance Survey</a>. My pronouns are he/they, and I love the web. I'm keen on building happy teams who collaborate fluidly to create innovative solutions to strategically relevant problems.
+              Who made this? <strong>Hi!</strong> I'm <a href={'https://solidred.co.uk'}>Howard Yeend</a>, a lead engineer proudly working at <a href={'https://os.uk'}>Ordnance Survey</a>. My pronouns are he/they, and I love the web. My jam is anything that encourages collaboration, startup-like innovation, and trying to solve strategically relevant problems in unexpected ways.
+              <br /><br />
+              You can find the code to <strong>Prism</strong> on <a href={'https://github.com/user24/prism'}>my github</a>. It's very rough and ready, but I'm happy to chat about it.
           </p>
           <Swatch colour={{r: 254, g: 255, b: 202, label:'{ecru, apparently}'}} />
       </main>
