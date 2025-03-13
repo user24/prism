@@ -68,11 +68,19 @@ const performKmeans = (canvas, numClusters, filterGreys, colourSpace) => {
 
     const namedCentroids = centroids.map(centroid => {
         const nearest = colours.map(col => {
-            const hsvPlottedPoint = plotPointInSpaceUsingHSV(col);
-            return {
-                ...hsvPlottedPoint,
-                dist: euclideanDistance(centroid, hsvPlottedPoint)
-            };
+            if (colourSpace === TYPES.RGB) {
+                const rgbPlottedPoint = plotPointInSpaceUsingRGB(col);
+                return {
+                    ...rgbPlottedPoint,
+                    dist: euclideanDistance(centroid, rgbPlottedPoint)
+                };
+            } else {
+                const hsvPlottedPoint = plotPointInSpaceUsingHSV(col);
+                return {
+                    ...hsvPlottedPoint,
+                    dist: euclideanDistance(centroid, hsvPlottedPoint)
+                };
+            }
         }).sort((a, b) => a.dist - b.dist)[0];
 
         return {
@@ -84,6 +92,15 @@ const performKmeans = (canvas, numClusters, filterGreys, colourSpace) => {
         // but that still map to the same name
         return centroids.findIndex(c => c.label === centroid.label) === i;
     }).map(centroid => {
+
+        if (colourSpace === TYPES.RGB) {
+            return {
+                ...centroid,
+                r: centroid.x,
+                g: centroid.y,
+                b: centroid.z
+            };
+        }
         const {r, g, b} = hsv2Rgb(centroid.x, centroid.y, centroid.z);
         console.log({r, g, b, centroid});
         return {
@@ -93,7 +110,7 @@ const performKmeans = (canvas, numClusters, filterGreys, colourSpace) => {
             b
         };
     });
-
+console.log(namedCentroids);
     return {samples, clusters, centroids: namedCentroids};
 };
 
@@ -263,7 +280,7 @@ export default function Home() {
               hovertemplate={`%{customdata}<br />${hovertemplates[colourSpace]}`}
           />
           <p className={styles.text}>
-              For the purposes of <strong>Prism</strong> I have removed colours with undesirable names such as Puke Green <Swatch colour={{r: 154, g: 174, b: 7}} /> and judgemental names like Ugly Purple <Swatch colour={{r: 164, g: 66, b: 160}} /> (I actually quite like that one), leaving us with a space of {colours.length} named colours. I've thought about removing colours that are very close to each other too. But then, maybe Cobalt Blue <Swatch colour={{r: 3, g: 10, b: 167}} />really is different to Royal Blue <Swatch colour={{r: 5, g: 4, b: 170}} />
+              For the purposes of <strong>Prism</strong> I have removed colours with undesirable names such as Puke Green <Swatch colour={{r: 154, g: 174, b: 7}} /> and judgemental names like Ugly Purple <Swatch colour={{r: 164, g: 66, b: 160}} /> (I actually quite like that shade), leaving us with a space of {colours.length} named colours. I've thought about removing colours that are very close to each other too. But then, maybe Cobalt Blue <Swatch colour={{r: 3, g: 10, b: 167}} />really is different to Royal Blue <Swatch colour={{r: 5, g: 4, b: 170}} />
           <br /><br />
           Did you know 'ecru' is a colour? I was on the verge of removing it because I'd never heard of it, but this sparked a thought about the responsibility we have and the impact it has on our culture and language. Not just when filtering, sanitising, and removing outliers, but when creating tools and publishing information more generally too. Who am I to remove 'ecru' just because I think it's a rarely used word. Clearly it's common enough to feature in the top {colours.length}.
               <br /><br />
