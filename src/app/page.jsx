@@ -128,7 +128,7 @@ export default function Home() {
 
     const hovertemplates = {
         [TYPES.RGB]: 'rgb(%{x}, %{y}, %{z})',
-        [TYPES.HSV]: 'hsv(%{x}, %{y}, %{z})',
+        [TYPES.HSV]: 'hsv(%{x}, %{y}, %{z})',//<br />rgb(%{r}, %{g}, %{b})',
         [TYPES.XYZ]: 'xyz(%{x}, %{y}, %{z})',
     };
 
@@ -272,6 +272,7 @@ export default function Home() {
               title={'xkcd colour names'}
               type={colourSpace}
               points={colours.map(col => {
+                  console.log(col);
                     return {
                         ...col,
                         label: sentenceCase(col.name)

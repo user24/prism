@@ -153,15 +153,27 @@ const Scatter3dColours = ({points, title = 'scatter plot', type=TYPES.RGB, hover
         zTitle = 'Z';
     }
 
-    const x = points.map(p => p.x);
-    const y = points.map(p => p.y);
-    const z = points.map(p => p.z);
+    const [x, y, z, r, g, b] = points.reduce((acc, { x, y, z, r, g, b }) => {
+        acc[0].push(x);
+        acc[1].push(y);
+        acc[2].push(z);
+        acc[3].push(r);
+        acc[4].push(g);
+        acc[5].push(b);
+        return acc;
+    }, [[], [], [], [], [], []]);
+
+    console.log({x, y, z, r, g, b});
+
     const colours = points.map(p => `rgb(${p.r}, ${p.g}, ${p.b})`);
     const customdata = points.map(p => p.label);
 
     return <Plotly
             data={[
                 {
+                    r,
+                    g,
+                    b,
                     x,
                     y,
                     z,
