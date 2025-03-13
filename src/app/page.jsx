@@ -177,6 +177,11 @@ export default function Home() {
               <h3>Colours out:</h3><br />
               {centroids.map(centroid => <Swatch colour={centroid} key={JSON.stringify(centroid)} />)}
               <br /><br />
+              <p className={styles.text}>
+                  Derived from these {samples.length} randomly picked samples, to be clustered into groups of similar colours, and then compared against known names to give the above set of named colour swatches.
+              </p>
+              <SwatchGrid swatches={samples} className={styles.gridSwatch} />
+              <br /><br />
               {/*<p className={styles.text}>*/}
               {/*<label>*/}
               {/*    Remove greys: <input type='checkbox' checked={filterGreys} onChange={() => setFilterGreys(!filterGreys)} /><br />*/}
@@ -186,7 +191,7 @@ export default function Home() {
               <br />
               <h2>Thoughts and explanation.</h2>
               <p className={styles.text}>
-                  Compare the colours you see in the swatches below, randomly sampled from the image, to the colours that come to mind when looking at the source image.
+                  Compare the colours you see in the swatches, randomly sampled from the image, to the colours that come to mind when looking at the source image.
                   </p>
               <p className={styles.text}>
               Does the dominant colour change?
@@ -202,7 +207,6 @@ export default function Home() {
               <p className={styles.text}>
                   Sometimes a colour happens to be named in a way that seems eerily accurate, for example a photo of a road might be labelled 'concrete grey', or a sky might get tagged 'cloudy blue'. If you didn't know about the underlying algorithm, you might give the AI more credit than it's due. Let's pull back the curtain and see there's no ghost in this machine :)
               </p>
-              <SwatchGrid swatches={samples} className={styles.gridSwatch} />
 
               <p className={styles.text}>
                   If we plot these colour samples into a 3d space, with hue, saturation and value as the axes, we can start to pick out groups (or 'clusters') of similar colours. Note that I'm projecting these into a cube shaped space because it was easier, but <em>really</em> it should be a cylinder because that's how HSV was designed - for the purposes of this it works well enough, but there's plenty of room for improvement.
@@ -230,9 +234,10 @@ export default function Home() {
           {/*<label>RGB: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.RGB} onChange={() => setColourSpace(TYPES.RGB)} /></label>*/}
           {/*<label>XYZ: <input type='radio' name='colourSpace' checked={colourSpace === TYPES.XYZ} onChange={() => setColourSpace(TYPES.XYZ)} /></label>*/}
 
-          <p className={'text'}>
-              The webcomic <a href='https://blog.xkcd.com/2010/05/03/color-survey-results/'>xkcd</a> ran an experiment where five million random colours were named by 222,500 visitors. These are the most common {colours.length} names given.<br />
-              Small brag: I got a shoutout <a href='https://blog.xkcd.com/2010/05/15/miscellaneous/comment-page-1/'>from Randall</a> for a similar visualisation at the time.
+          <p className={styles.text}>
+              Prism takes colour samples from an image, clusters them into a few groups of similar colours, and then compares the center of those clusters to pre-named colours, to output for example 'blue and yellow' from an image of a beach. <br />
+              The webcomic <a href='https://blog.xkcd.com/2010/05/03/color-survey-results/'>xkcd</a> once ran an experiment where 5 million random colours were named by 222,500 visitors. The visualisation below shows the most common {colours.length} names, which are the data we use to name the colours - hover over a colour point to see its name.<br />
+              Small brag: I got a shoutout <a href='https://blog.xkcd.com/2010/05/15/miscellaneous/comment-page-1/'>from Randall</a> for a similar visualisation :)
           </p>
           <Scatter3dColours
               className={styles.plotly}

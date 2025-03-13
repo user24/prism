@@ -368,7 +368,7 @@ dark plum\t#3f012c\t
 pear\t#cbf85f\t
 pinkish orange\t#ff724c\t
 midnight purple\t#280137\t
-light urple\t#b36ff6\t
+light purple\t#b36ff6\t
 dark mint\t#48c072\t
 greenish tan\t#bccb7a\t
 light burgundy\t#a8415b\t

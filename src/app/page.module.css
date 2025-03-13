@@ -32,6 +32,7 @@
   flex-direction: column;
   gap: 32px;
   grid-row-start: 2;
+  max-width: 75vw;
 }
 
 .text {
@@ -39,6 +40,7 @@
   width: 100%;
   margin-top: 20px;
   margin-bottom: 20px;
+  max-width: 50vw;
 }
 
 .callout {
